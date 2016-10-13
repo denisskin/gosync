@@ -6,6 +6,9 @@ import (
 	"xnet/std/enc"
 )
 
+// A Map is a set of temporary objects that may be individually set, get and deleted.
+//
+// A Map is safe for use by multiple goroutines simultaneously.
 type Map struct {
 	mx   sync.RWMutex
 	vals map[interface{}]interface{}
