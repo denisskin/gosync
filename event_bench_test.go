@@ -1,11 +1,11 @@
 package gosync
 
 import (
-	"testing"
 	"sync"
+	"testing"
 )
 
-func BenchmarkWaitingOnEvent(b *testing.B) {
+func BenchmarkWaitingViaEvent(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
 		ev := NewEvent()
@@ -19,7 +19,7 @@ func BenchmarkWaitingOnEvent(b *testing.B) {
 	}
 }
 
-func BenchmarkWaitingOnWaitGroups(b *testing.B) {
+func BenchmarkWaitingViaWaitGroups(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
 		var wg sync.WaitGroup
@@ -34,7 +34,7 @@ func BenchmarkWaitingOnWaitGroups(b *testing.B) {
 	}
 }
 
-func BenchmarkWaitOnMutex(b *testing.B) {
+func BenchmarkWaitingViaMutex(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
 		var mx sync.Mutex
