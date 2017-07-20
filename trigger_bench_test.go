@@ -5,17 +5,17 @@ import (
 	"testing"
 )
 
-func BenchmarkWaitingViaEvent(b *testing.B) {
+func BenchmarkWaitingViaTrigger(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 
-		ev := NewEvent()
+		t := NewTrigger()
 
 		go func() {
 			// do somethings
-			ev.Done()
+			t.Trigger()
 		}()
 
-		ev.Wait()
+		t.Wait()
 	}
 }
 
