@@ -11,7 +11,7 @@ func NewTrigger() Trigger {
 // Done triggers the event.
 // It can be called only once.
 func (t Trigger) Trigger() {
-	defer func(){
+	defer func() {
 		recover()
 	}()
 	close(t)
