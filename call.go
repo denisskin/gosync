@@ -35,3 +35,15 @@ func Call(fn ...func() error) error {
 	}
 	return c.Wait()
 }
+
+func Do(fn ...func()) {
+	var wg sync.WaitGroup
+	for _, f := range fn {
+		wg.Add(1)
+		go func(fn func()) {
+			defer wg.Done()
+			fn()
+		}(f)
+	}
+	wg.Wait()
+}
