@@ -115,6 +115,14 @@ func (m *Map) Pop() (key, value interface{}) {
 	return
 }
 
+func (m *Map) PopAll() (values map[interface{}]interface{}) {
+	m.mx.Lock()
+	defer m.mx.Unlock()
+	values = m.vals
+	m.vals = nil
+	return
+}
+
 func (m *Map) RandomValue() interface{} {
 	_, v := m.Random()
 	return v
