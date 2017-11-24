@@ -16,15 +16,22 @@ func (q *Pool) Push(value interface{}) {
 	q.vals = append(q.vals, value)
 }
 
-func (q *Pool) Pop() interface{} {
+func (q *Pool) Pop() (val interface{}) {
 	q.mx.Lock()
 	defer q.mx.Unlock()
 	if len(q.vals) > 0 {
-		v := q.vals[0]
+		val = q.vals[0]
 		q.vals = q.vals[1:]
-		return v
 	}
-	return nil
+	return
+}
+
+func (q *Pool) PopAll() (vals []interface{}) {
+	q.mx.Lock()
+	defer q.mx.Unlock()
+	vals = q.vals
+	q.vals = nil
+	return
 }
 
 func (q *Pool) Size() int {
