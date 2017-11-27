@@ -13,15 +13,22 @@ func (s *Stack) Push(value interface{}) {
 	s.vals = append(s.vals, value)
 }
 
-func (s *Stack) Pop() interface{} {
+func (s *Stack) Pop() (val interface{}) {
 	s.mx.Lock()
 	defer s.mx.Unlock()
 	if len(s.vals) > 0 {
-		v := s.vals[len(s.vals)-1]
+		val = s.vals[len(s.vals)-1]
 		s.vals = s.vals[:len(s.vals)-1]
-		return v
 	}
-	return nil
+	return
+}
+
+func (s *Stack) PopAll() (vals []interface{}) {
+	s.mx.Lock()
+	defer s.mx.Unlock()
+	vals = s.vals
+	s.vals = nil
+	return
 }
 
 func (s *Stack) Size() int {
