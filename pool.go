@@ -1,9 +1,6 @@
 package gosync
 
-import (
-	"sync"
-	"xnet/std/enc"
-)
+import "sync"
 
 type Pool struct {
 	mx   sync.RWMutex
@@ -53,7 +50,7 @@ func (q *Pool) String() string {
 	q.mx.RLock()
 	defer q.mx.RUnlock()
 
-	return enc.String(q.vals)
+	return encString(q.vals)
 }
 
 func (q *Pool) Strings() []string {
@@ -62,7 +59,7 @@ func (q *Pool) Strings() []string {
 
 	ss := make([]string, 0, len(q.vals))
 	for _, v := range q.vals {
-		ss = append(ss, enc.String(v))
+		ss = append(ss, encString(v))
 	}
 	return ss
 }

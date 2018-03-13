@@ -1,9 +1,10 @@
 package gosync
 
 import (
+	"encoding/json"
+	"fmt"
 	"math/rand"
 	"sync"
-	"xnet/std/enc"
 )
 
 // A Map is a set of temporary objects that may be individually set, get and deleted.
@@ -92,15 +93,15 @@ func (m *Map) String() string {
 
 	ss := map[string]string{}
 	for k, v := range m.vals {
-		ss[enc.String(k)] = enc.String(v)
+		ss[encString(k)] = encString(v)
 	}
-	return enc.String(ss)
+	return encString(ss)
 }
 
 func (m *Map) Strings() []string {
 	ss := make([]string, 0, len(m.vals))
 	for _, v := range m.Values() {
-		ss = append(ss, enc.String(v))
+		ss = append(ss, encString(v))
 	}
 	return ss
 }
@@ -144,4 +145,17 @@ func (m *Map) Random() (key, value interface{}) {
 		panic(1)
 	}
 	return nil, nil
+}
+
+// String returns object as string (encode to json)
+func encString(v interface{}) string {
+	switch s := v.(type) {
+	case string:
+		return s
+	case fmt.Stringer:
+		return s.String()
+	default:
+		b, _ := json.Marshal(v)
+		return string(b)
+	}
 }
