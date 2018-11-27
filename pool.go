@@ -7,6 +7,10 @@ type Pool struct {
 	vals []interface{}
 }
 
+func NewPool() *Pool {
+	return new(Pool)
+}
+
 func (q *Pool) Push(value interface{}) {
 	q.mx.Lock()
 	defer q.mx.Unlock()
