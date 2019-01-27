@@ -1,8 +1,10 @@
 package gosync
 
 import (
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
 	"sync"
 )
@@ -202,6 +204,22 @@ func (m *Map) Random() (key, value interface{}) {
 		panic(1)
 	}
 	return nil, nil
+}
+
+func (m *Map) BinaryEncode(w io.Writer) error {
+	m.mx.RLock()
+	defer m.mx.RUnlock()
+
+	return gob.NewEncoder(w).Encode(m.vals)
+}
+
+func (m *Map) BinaryDecode(r io.Reader) (err error) {
+	m.mx.Lock()
+	defer m.mx.Unlock()
+
+	err = gob.NewDecoder(r).Decode(&m.vals)
+	m.ver++
+	return
 }
 
 // String returns object as string (encode to json)
