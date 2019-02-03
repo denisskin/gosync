@@ -25,4 +25,5 @@ func (m *Cache) Set(key, value interface{}) {
 		}
 	}
 	m.vals[key] = value
+	m.ver++
 }
