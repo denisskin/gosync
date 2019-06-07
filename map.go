@@ -50,7 +50,7 @@ func (m *Map) Set(key, value interface{}) {
 	m.ver++
 }
 
-func (m *Map) Increment(key interface{}, val int64) {
+func (m *Map) Increment(key interface{}, val int64) int64 {
 	key = normKey(key)
 
 	m.mx.Lock()
@@ -63,6 +63,7 @@ func (m *Map) Increment(key interface{}, val int64) {
 	}
 	m.vals[key] = val
 	m.ver++
+	return val
 }
 
 func (m *Map) Delete(key interface{}) {
@@ -70,8 +71,11 @@ func (m *Map) Delete(key interface{}) {
 
 	m.mx.Lock()
 	defer m.mx.Unlock()
-	delete(m.vals, key)
-	m.ver++
+
+	if m.vals != nil {
+		delete(m.vals, key)
+		m.ver++
+	}
 }
 
 func (m *Map) Get(key interface{}) interface{} {
@@ -79,8 +83,9 @@ func (m *Map) Get(key interface{}) interface{} {
 
 	m.mx.RLock()
 	defer m.mx.RUnlock()
-	if v, ok := m.vals[key]; ok {
-		return v
+
+	if m.vals != nil {
+		return m.vals[key]
 	}
 	return nil
 }
@@ -90,6 +95,10 @@ func (m *Map) Exists(key interface{}) bool {
 
 	m.mx.RLock()
 	defer m.mx.RUnlock()
+
+	if m.vals == nil {
+		return false
+	}
 	_, ok := m.vals[key]
 	return ok
 }
@@ -111,8 +120,10 @@ func (m *Map) KeyValues() map[interface{}]interface{} {
 	defer m.mx.RUnlock()
 
 	res := map[interface{}]interface{}{}
-	for k, v := range m.vals {
-		res[k] = v
+	if m.vals != nil {
+		for k, v := range m.vals {
+			res[k] = v
+		}
 	}
 	return res
 }
@@ -122,8 +133,10 @@ func (m *Map) Keys() []interface{} {
 	defer m.mx.RUnlock()
 
 	vv := make([]interface{}, 0, len(m.vals))
-	for key := range m.vals {
-		vv = append(vv, key)
+	if m.vals != nil {
+		for key := range m.vals {
+			vv = append(vv, key)
+		}
 	}
 	return vv
 }
@@ -133,8 +146,10 @@ func (m *Map) Values() []interface{} {
 	defer m.mx.RUnlock()
 
 	vv := make([]interface{}, 0, len(m.vals))
-	for _, v := range m.vals {
-		vv = append(vv, v)
+	if m.vals != nil {
+		for _, v := range m.vals {
+			vv = append(vv, v)
+		}
 	}
 	return vv
 }
@@ -144,8 +159,10 @@ func (m *Map) String() string {
 	defer m.mx.RUnlock()
 
 	ss := map[string]string{}
-	for k, v := range m.vals {
-		ss[encString(k)] = encString(v)
+	if m.vals != nil {
+		for k, v := range m.vals {
+			ss[encString(k)] = encString(v)
+		}
 	}
 	return encString(ss)
 }
@@ -161,10 +178,12 @@ func (m *Map) Strings() []string {
 func (m *Map) Pop() (key, value interface{}) {
 	m.mx.Lock()
 	defer m.mx.Unlock()
-	for key, value = range m.vals {
-		delete(m.vals, key)
-		m.ver++
-		return
+	if m.vals != nil {
+		for key, value = range m.vals {
+			delete(m.vals, key)
+			m.ver++
+			return
+		}
 	}
 	return
 }
